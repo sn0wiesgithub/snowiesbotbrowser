@@ -51,4 +51,5 @@ pyinstaller --onefile --add-data "snowybot.js:." --noconsole --icon=images.ico s
 #also in some distros pyqt5 can just be pyqt
 
 #run also with
+
 python3 snowybrowser.py 
