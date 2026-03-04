@@ -20,7 +20,7 @@ pip install cryptography --break-system-packages
 
 #also if still no pyqtwebengine:
 
-#or windows pc
+#or windows pc WITH PYTHON INSTALLED
 
 pip install pyqt5 pyqtwebengine cryptography pyqt --break-system-packages
 
