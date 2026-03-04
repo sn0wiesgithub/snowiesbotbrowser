@@ -30,7 +30,7 @@ pyinstaller --onefile --add-data "snowybot.js;." --noconsole --icon=images.ico s
 pyinstaller --onefile --add-data "snowybot.js:." --noconsole --icon=images.ico snowybrowser.py
 
 #then in the dists folder there's your app
-# note also in some distros pyqt5 can just be pyqt
+#also in some distros pyqt5 can just be pyqt
 
 #run also with
 python3 snoWybrowser.py 
