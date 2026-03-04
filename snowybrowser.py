@@ -7,10 +7,13 @@ from urllib.parse import urlparse
 
 from cryptography.fernet import Fernet
 
-from PyQt6.QtWidgets import *
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
-from PyQt6.QtCore import *
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QTextEdit, QDialog, QLineEdit, QMessageBox
+)
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineProfile
+from PyQt5.QtCore import QUrl
+
 
 START_WIDTH = 1300
 START_HEIGHT = 850
@@ -53,14 +56,14 @@ class PasswordDialog(QDialog):
         layout = QVBoxLayout(self)
 
         self.password = QLineEdit()
-        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setEchoMode(QLineEdit.Password)
         self.password.setPlaceholderText("Password")
         layout.addWidget(self.password)
 
         self.confirm_password = None
         if confirm:
             self.confirm_password = QLineEdit()
-            self.confirm_password.setEchoMode(QLineEdit.EchoMode.Password)
+            self.confirm_password.setEchoMode(QLineEdit.Password)
             self.confirm_password.setPlaceholderText("Confirm Password")
             layout.addWidget(self.confirm_password)
 
@@ -116,7 +119,7 @@ class Browser(QMainWindow):
 
         os.makedirs(self.base_path, exist_ok=True)
 
-        # 🔐 GUI MASTER PASSWORD
+        # 🔐 MASTER PASSWORD
         self.master_password = self.load_or_create_master_password()
         self.fernet = Fernet(derive_key(self.master_password))
 
@@ -128,7 +131,7 @@ class Browser(QMainWindow):
         self.profile.setPersistentStoragePath(self.profile_path)
         self.profile.setCachePath(self.cache_path)
         self.profile.setPersistentCookiesPolicy(
-            QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies
+            QWebEngineProfile.ForcePersistentCookies
         )
 
         self.snowybot_injected = False
@@ -136,11 +139,11 @@ class Browser(QMainWindow):
         self.init_ui()
         self.new_tab()
 
-    # ================= MASTER PASSWORD LOGIC =================
+    # ================= MASTER PASSWORD =================
     def load_or_create_master_password(self):
         if not os.path.exists(self.master_file):
             dlg = PasswordDialog("Create Master Password", confirm=True)
-            if dlg.exec() != QDialog.DialogCode.Accepted:
+            if dlg.exec_() != QDialog.Accepted:
                 sys.exit()
 
             password = dlg.get_password()
@@ -158,7 +161,7 @@ class Browser(QMainWindow):
 
         else:
             dlg = PasswordDialog("Enter Master Password")
-            if dlg.exec() != QDialog.DialogCode.Accepted:
+            if dlg.exec_() != QDialog.Accepted:
                 sys.exit()
 
             password = dlg.get_password()
@@ -235,7 +238,7 @@ class Browser(QMainWindow):
 
         script_path = resource_path("snowybot.js")
         if not os.path.exists(script_path):
-            self.add_console_line("snowybot.js not found.")
+            self.console.append("snowybot.js not found.")
             return
 
         with open(script_path, "r", encoding="utf-8") as f:
@@ -245,7 +248,7 @@ class Browser(QMainWindow):
 
         self.snowybot_injected = True
         self.bot_button.setEnabled(False)
-        self.add_console_line("SnowyBot injected.")
+        self.console.append("SnowyBot injected.")
 
     def refresh_page(self):
         self.view.reload()
@@ -297,6 +300,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     browser = Browser()
     browser.show()
-    exit_code = app.exec()
+    exit_code = app.exec_()
     browser.encrypt_profile()
     sys.exit(exit_code)
